@@ -1,0 +1,20 @@
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+jobs:
+  validate-pr-title:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Validate PR Title
+        run: |
+          echo "Validating PR Title..."
+          TITLE="${{ github.event.pull_request.title }}"
+          echo "PR Title: $TITLE"
+          if [[ ! "$TITLE" =~ ^(fix|release|feat|hotfix|build|test)\([A-Za-z0-9/-]+\):\ [A-Za-z0-9-]+\ [A-Za-z ]+$ ]]; then
+            echo "Invalid PR title format. Please follow the required format: type(scope): {TicketNum}-task name"
+            exit 1
+          fi
